@@ -1,0 +1,6 @@
+{
+  "name": "N-CRIMS",
+  "description": "Nigerian Criminal Record Identification & Matching System for real-time biometric verification, warrant cross-checks, multi-agency dossier lookup, offline caching, and NDPA compliance audit.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
