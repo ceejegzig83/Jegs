@@ -6,6 +6,7 @@ import {
   FingerPosition 
 } from '../types';
 import { generateBiometricVector, generateMinutiaePoints, quickHash } from '../utils/crypto';
+import { createFacialTemplate } from '../utils/faceMatching';
 
 export const INITIAL_OFFICERS: OfficerProfile[] = [
   {
@@ -91,6 +92,7 @@ export const MOCK_SUSPECTS: Suspect[] = [
     distinguishingMarks: ['Scar across right jawline (5cm)', 'Eagle tattoo on left forearm', 'Surgical scar on right knee'],
     riskLevel: 'HIGH',
     mugshotUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&auto=format&fit=crop&q=80',
+    facialTemplate: createFacialTemplate('SUSP-01J98K21'),
     biometrics: [
       {
         templateId: 'BIO-TPL-01-RTHUMB',
@@ -219,6 +221,7 @@ export const MOCK_SUSPECTS: Suspect[] = [
     distinguishingMarks: ['Deep mole near left nostril', 'Gold tooth upper right canine'],
     riskLevel: 'MEDIUM',
     mugshotUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80',
+    facialTemplate: createFacialTemplate('SUSP-01J88A92'),
     biometrics: [
       {
         templateId: 'BIO-TPL-02-RTHUMB',
@@ -317,6 +320,7 @@ export const MOCK_SUSPECTS: Suspect[] = [
     distinguishingMarks: ['Henna tattoo patterns on right hand', 'Birthmark on left collarbone'],
     riskLevel: 'MEDIUM',
     mugshotUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80',
+    facialTemplate: createFacialTemplate('SUSP-01J77B43'),
     biometrics: [
       {
         templateId: 'BIO-TPL-03-RTHUMB',
@@ -402,6 +406,7 @@ export const MOCK_SUSPECTS: Suspect[] = [
     distinguishingMarks: ['Deep shrapnel scar on left chest', 'Missing tip of right pinky finger', 'Tribal marks on both cheeks (Gobir/Zamfara pattern)'],
     riskLevel: 'EXTREME',
     mugshotUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80',
+    facialTemplate: createFacialTemplate('SUSP-01J66C12'),
     biometrics: [
       {
         templateId: 'BIO-TPL-04-RTHUMB',
@@ -501,6 +506,7 @@ export const MOCK_SUSPECTS: Suspect[] = [
     distinguishingMarks: ['Spider web tattoo on neck', 'Burn mark on left shoulder'],
     riskLevel: 'HIGH',
     mugshotUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80',
+    facialTemplate: createFacialTemplate('SUSP-01J55D88'),
     biometrics: [
       {
         templateId: 'BIO-TPL-05-RTHUMB',

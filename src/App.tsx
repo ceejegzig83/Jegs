@@ -108,27 +108,41 @@ export default function App() {
     setAuditLogs(prev => [newLog, ...prev]);
   };
 
-  // Queue offline biometric scan
+  // Queue offline biometric/facial scan
   const handleQueueOfflineScan = (scanData: {
-    fingerPosition: FingerPosition;
+    modality?: 'FINGERPRINT' | 'FACIAL';
+    fingerPosition?: FingerPosition;
     qualityScore: number;
-    minutiaeCount: number;
+    minutiaeCount?: number;
     vectorEmbedding: number[];
     purposeCode: SearchPurposeCode;
     gpsLocation: string;
     state: string;
+    faceImageBase64?: string;
+    landmarksCount?: number;
+    cctvEnhanced?: boolean;
   }) => {
-    const scanId = `OFFLINE-SCAN-${Math.floor(1000 + Math.random() * 9000)}`;
+    const scanId = `OFFLINE-${scanData.modality === 'FACIAL' ? 'FACE' : 'SCAN'}-${Math.floor(1000 + Math.random() * 9000)}`;
     const checksum = quickHash(scanId + JSON.stringify(scanData.vectorEmbedding.slice(0, 10)));
     
     // Check if matches known suspect
     let matchedId: string | undefined;
     for (const s of suspects) {
-      if (s.biometrics.length > 0) {
-        const sim = calculateCosineSimilarity(scanData.vectorEmbedding, s.biometrics[0].vectorEmbedding);
-        if (sim >= 0.85) {
-          matchedId = s.id;
-          break;
+      if (scanData.modality === 'FACIAL') {
+        if (s.facialTemplate) {
+          const sim = calculateCosineSimilarity(scanData.vectorEmbedding, s.facialTemplate.vectorEmbedding);
+          if (sim >= 0.82) {
+            matchedId = s.id;
+            break;
+          }
+        }
+      } else {
+        if (s.biometrics.length > 0) {
+          const sim = calculateCosineSimilarity(scanData.vectorEmbedding, s.biometrics[0].vectorEmbedding);
+          if (sim >= 0.85) {
+            matchedId = s.id;
+            break;
+          }
         }
       }
     }
@@ -136,13 +150,17 @@ export default function App() {
     const newQueueItem: OfflineQueuedScan = {
       id: scanId,
       capturedAt: new Date().toISOString(),
-      fingerPosition: scanData.fingerPosition,
+      modality: scanData.modality || 'FINGERPRINT',
+      fingerPosition: scanData.fingerPosition || 'RIGHT_THUMB',
       qualityScore: scanData.qualityScore,
-      minutiaeCount: scanData.minutiaeCount,
+      minutiaeCount: scanData.minutiaeCount || 44,
+      landmarksCount: scanData.landmarksCount,
+      faceImageBase64: scanData.faceImageBase64,
+      cctvEnhanced: scanData.cctvEnhanced,
       vectorEmbedding: scanData.vectorEmbedding,
       purposeCode: scanData.purposeCode,
       officerBadge: currentOfficer.badgeNumber,
-      deviceId: 'MORPHO-BLE-FIELD-991',
+      deviceId: scanData.modality === 'FACIAL' ? 'CAM-FIELD-ARREST-01' : 'MORPHO-BLE-FIELD-991',
       gpsLocation: scanData.gpsLocation,
       state: scanData.state,
       encryptedPayload: `AES256GCM:${Math.random().toString(36).substring(2)}${Math.random().toString(36).substring(2)}`,

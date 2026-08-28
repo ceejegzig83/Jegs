@@ -10,6 +10,7 @@ import {
   Lock, 
   MapPin, 
   Fingerprint,
+  Camera,
   Trash2,
   ExternalLink,
   AlertCircle
@@ -160,20 +161,30 @@ export const OfflineQueueManager: React.FC<OfflineQueueManagerProps> = ({
                           ? 'bg-emerald-950 text-emerald-400 border border-emerald-700'
                           : 'bg-amber-950 text-amber-400 border border-amber-700'
                       }`}>
-                        <Fingerprint className="w-5 h-5" />
+                        {scan.modality === 'FACIAL' ? (
+                          <Camera className="w-5 h-5" />
+                        ) : (
+                          <Fingerprint className="w-5 h-5" />
+                        )}
                       </div>
 
                       <div>
                         <div className="font-bold text-white flex items-center gap-2">
                           <span>{scan.id}</span>
                           <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
-                            {scan.fingerPosition.replace('_', ' ')}
+                            {scan.modality === 'FACIAL'
+                              ? `FACIAL PROBE ${scan.cctvEnhanced ? '(CCTV ENHANCED)' : '(DEEP ARCFACE)'}`
+                              : (scan.fingerPosition?.replace('_', ' ') || 'BIOMETRIC SCAN')}
                           </span>
                         </div>
                         <div className="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
                           <span>Quality: {scan.qualityScore}%</span>
                           <span>•</span>
-                          <span>Minutiae: {scan.minutiaeCount} pts</span>
+                          <span>
+                            {scan.modality === 'FACIAL'
+                              ? `${scan.landmarksCount || 68} Facial Landmarks`
+                              : `Minutiae: ${scan.minutiaeCount || 46} pts`}
+                          </span>
                           <span>•</span>
                           <span>Purpose: {scan.purposeCode}</span>
                         </div>

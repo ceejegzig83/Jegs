@@ -8,6 +8,7 @@ import {
   Scale, 
   Building2, 
   Fingerprint, 
+  Camera,
   User, 
   Download, 
   PlusCircle, 
@@ -369,44 +370,78 @@ export const SuspectDossier: React.FC<SuspectDossierProps> = ({
         </div>
       </div>
 
-      {/* Biometric ISO/IEC 19794-2 Template Metadata Card */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-xl space-y-3">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-          <div className="flex items-center gap-2 text-white font-bold text-sm">
-            <Fingerprint className="w-4 h-4 text-emerald-400" />
-            <span>Enrolled Biometric Template Telemetry</span>
+      {/* Multimodal Biometric & Facial Vector Telemetry */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Biometric ISO/IEC 19794-2 Fingerprint Template Metadata */}
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-xl space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex items-center gap-2 text-white font-bold text-sm">
+              <Fingerprint className="w-4 h-4 text-emerald-400" />
+              <span>Fingerprint Minutiae Telemetry</span>
+            </div>
+            <span className="text-[10px] text-emerald-400 font-mono px-2 py-0.5 rounded bg-slate-950 border border-emerald-900">
+              ISO/IEC 19794-2
+            </span>
           </div>
-          <span className="text-xs text-slate-400 font-mono">
-            Encrypted Vector Index (pgvector / HNSW)
-          </span>
+
+          <div className="space-y-2 text-xs">
+            <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800 flex justify-between">
+              <span className="text-slate-400">Position / Standard:</span>
+              <span className="font-semibold text-slate-200">{suspect.biometrics[0]?.fingerPosition || 'RIGHT_THUMB'}</span>
+            </div>
+            <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800 flex justify-between">
+              <span className="text-slate-400">Minutiae Count / Quality:</span>
+              <span className="font-semibold text-emerald-400">
+                {suspect.biometrics[0]?.minutiaeCount || 46} pts • {suspect.biometrics[0]?.qualityScore || 94}% NFIQ-2
+              </span>
+            </div>
+            <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800 flex justify-between">
+              <span className="text-slate-400">Capture Device:</span>
+              <span className="text-slate-300 font-mono text-[11px] truncate max-w-[200px]">
+                {suspect.biometrics[0]?.captureDevice || 'MorphoTop 100 LiveScan'}
+              </span>
+            </div>
+            <div className="p-2 bg-slate-950 rounded-lg border border-slate-800 font-mono text-[10px] text-slate-400 truncate">
+              <span className="text-emerald-400 font-bold">HASH: </span>
+              {suspect.biometrics[0]?.encryptedHash || 'SHA256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069'}
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-          <div className="bg-slate-950 p-3 rounded-lg border border-slate-800">
-            <span className="text-slate-500 text-[10px] block uppercase">Standard / Finger</span>
-            <span className="font-semibold text-slate-200">
-              {suspect.biometrics[0]?.isoStandard || 'ISO/IEC 19794-2'} • {suspect.biometrics[0]?.fingerPosition || 'RIGHT_THUMB'}
+        {/* Facial Recognition Deep ArcFace Telemetry */}
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-xl space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex items-center gap-2 text-white font-bold text-sm">
+              <Camera className="w-4 h-4 text-blue-400" />
+              <span>Facial Recognition Vector Telemetry</span>
+            </div>
+            <span className="text-[10px] text-blue-400 font-mono px-2 py-0.5 rounded bg-slate-950 border border-blue-900">
+              ISO/IEC 19794-5 (ArcFace)
             </span>
           </div>
 
-          <div className="bg-slate-950 p-3 rounded-lg border border-slate-800">
-            <span className="text-slate-500 text-[10px] block uppercase">Minutiae Count & Quality</span>
-            <span className="font-semibold text-emerald-400">
-              {suspect.biometrics[0]?.minutiaeCount || 46} points • {suspect.biometrics[0]?.qualityScore || 94}% NFIQ Score
-            </span>
+          <div className="space-y-2 text-xs">
+            <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800 flex justify-between">
+              <span className="text-slate-400">Deep Facial Landmarks:</span>
+              <span className="font-semibold text-emerald-400">
+                {suspect.facialTemplate?.landmarks?.length || 68} Points (Biometric Mesh)
+              </span>
+            </div>
+            <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800 flex justify-between">
+              <span className="text-slate-400">Vector Embedding Dimensions:</span>
+              <span className="font-semibold text-slate-200">128-dim Float32 (pgvector HNSW)</span>
+            </div>
+            <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800 flex justify-between">
+              <span className="text-slate-400">Confidence Quality Score:</span>
+              <span className="font-semibold text-blue-400">
+                {suspect.facialTemplate?.qualityScore || 96}% Quality Index
+              </span>
+            </div>
+            <div className="p-2 bg-slate-950 rounded-lg border border-slate-800 font-mono text-[10px] text-slate-400 truncate">
+              <span className="text-blue-400 font-bold">TEMPLATE ID: </span>
+              {suspect.facialTemplate?.templateId || `FAC-TPL-${suspect.id}`}
+            </div>
           </div>
-
-          <div className="bg-slate-950 p-3 rounded-lg border border-slate-800">
-            <span className="text-slate-500 text-[10px] block uppercase">Enrollment Hardware</span>
-            <span className="font-semibold text-slate-200">
-              {suspect.biometrics[0]?.captureDevice || 'MorphoTop 100 LiveScan'}
-            </span>
-          </div>
-        </div>
-
-        <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 font-mono text-[11px] text-slate-400 break-all">
-          <span className="text-emerald-400 font-bold">CRYPTOGRAPHIC TEMPLATE HASH: </span>
-          {suspect.biometrics[0]?.encryptedHash || 'SHA256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069'}
         </div>
       </div>
     </div>

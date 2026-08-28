@@ -21,6 +21,8 @@ export interface OfficerProfile {
   avatarUrl: string;
 }
 
+export type ModalityType = 'FINGERPRINT' | 'FACIAL';
+
 export type FingerPosition = 
   | 'RIGHT_THUMB' 
   | 'RIGHT_INDEX' 
@@ -46,6 +48,31 @@ export interface BiometricTemplate {
   isoStandard: 'ISO/IEC 19794-2' | 'ANSI/NIST-ITL 1-2011';
   encryptedHash: string;
   captureDevice: string;
+  capturedAt: string;
+}
+
+export interface FacialLandmark {
+  x: number; // 0 - 100%
+  y: number; // 0 - 100%
+  type: 'LEFT_EYE' | 'RIGHT_EYE' | 'NOSE_BRIDGE' | 'NOSE_TIP' | 'MOUTH_L' | 'MOUTH_R' | 'CHIN' | 'JAW_LINE' | 'EYEBROW_L' | 'EYEBROW_R';
+  confidence: number;
+}
+
+export interface FacialTemplate {
+  templateId: string;
+  vectorEmbedding: number[]; // 128-dim deep neural facial embedding
+  landmarks: FacialLandmark[];
+  qualityScore: number; // 0 - 100
+  resolution: string;
+  poseAngles: {
+    yaw: number; // -90 to +90
+    pitch: number; // -90 to +90
+    roll: number; // -90 to +90
+  };
+  lightingScore: number;
+  occlusionDetected: boolean;
+  occlusionType?: 'NONE' | 'MASK' | 'GLASSES' | 'SHADOW' | 'HOODIE';
+  cctvEnhanced: boolean;
   capturedAt: string;
 }
 
@@ -105,6 +132,7 @@ export interface Suspect {
   riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'EXTREME';
   mugshotUrl: string;
   biometrics: BiometricTemplate[];
+  facialTemplate?: FacialTemplate;
   criminalRecords: CriminalRecord[];
   activeWarrants: Warrant[];
   lastKnownLocation: {
@@ -139,7 +167,8 @@ export interface AuditLogEntry {
   officerName: string;
   officerBadge: string;
   agency: AgencyCode;
-  action: 'BIOMETRIC_SEARCH' | 'DOSSIER_VIEW' | 'OFFLINE_SCAN_QUEUED' | 'SYNC_EXECUTED' | 'WARRANT_ISSUED' | 'RECORD_CREATED' | 'NDPA_EXPORT';
+  action: 'BIOMETRIC_SEARCH' | 'FACIAL_SEARCH' | 'DOSSIER_VIEW' | 'OFFLINE_SCAN_QUEUED' | 'SYNC_EXECUTED' | 'WARRANT_ISSUED' | 'RECORD_CREATED' | 'NDPA_EXPORT';
+  modality?: ModalityType;
   purposeCode: SearchPurposeCode;
   resourceId?: string;
   resourceSummary?: string;
@@ -155,9 +184,16 @@ export interface AuditLogEntry {
 export interface OfflineQueuedScan {
   id: string;
   capturedAt: string;
-  fingerPosition: FingerPosition;
+  modality: ModalityType;
+  // Fingerprint specific
+  fingerPosition?: FingerPosition;
+  minutiaeCount?: number;
+  // Facial specific
+  faceImageBase64?: string;
+  landmarksCount?: number;
+  cctvEnhanced?: boolean;
+  // Shared
   qualityScore: number;
-  minutiaeCount: number;
   vectorEmbedding: number[];
   purposeCode: SearchPurposeCode;
   officerBadge: string;
@@ -187,7 +223,27 @@ export interface BiometricMatchResult {
   matched: boolean;
   confidence: number; // 0.00 - 1.00
   suspect?: Suspect;
-  matchMinutiaeCount: number;
+  matchMinutiaeCount?: number;
   vectorDistance: number;
+  isOfflineResolved?: boolean;
+}
+
+export interface FaceMatchResult {
+  searchId: string;
+  timestamp: string;
+  matched: boolean;
+  confidence: number; // 0.00 - 1.00
+  suspect?: Suspect;
+  probeImageUrl: string;
+  candidateMugshotUrl?: string;
+  landmarkAlignmentScore: number;
+  vectorSimilarity: number;
+  qualityAssessment: {
+    resolution: string;
+    lighting: string;
+    pose: string;
+    occlusion: string;
+    cctvSuperResolved: boolean;
+  };
   isOfflineResolved?: boolean;
 }

@@ -121,7 +121,8 @@ export const AuditLedger: React.FC<AuditLedgerProps> = ({ logs, currentOfficer }
             className="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-slate-200 text-xs"
           >
             <option value="ALL">All Statutory Actions</option>
-            <option value="BIOMETRIC_SEARCH">Biometric Searches</option>
+            <option value="BIOMETRIC_SEARCH">Biometric Minutiae Searches</option>
+            <option value="FACIAL_SEARCH">Facial Recognition Searches</option>
             <option value="DOSSIER_VIEW">Dossier Access</option>
             <option value="OFFLINE_SCAN_QUEUED">Offline Scans</option>
             <option value="NDPA_EXPORT">NDPA Extracts</option>
